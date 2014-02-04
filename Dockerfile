@@ -25,13 +25,10 @@ RUN apt-get update
 # Set the env variable DEBIAN_FRONTEND to noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 
-# Installing the environment required: xserver, xdm, flux box, roc-filer and ssh
-RUN apt-get install -y xpra rox-filer ssh xserver-xephyr xdm fluxbox
+# Installing the environment required: xserver, flux box, roc-filer and ssh
+RUN apt-get install -y xpra rox-filer ssh xserver-xorg-video-dummy fluxbox
 
-# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding.
-RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
-RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
-RUN ln -s /usr/bin/Xorg /usr/bin/X
+# Configuring ssh to allow X11 Forwarding.
 RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
 
 # Upstart and DBus have issues inside docker. We work around in order to install firefox.
@@ -64,4 +61,4 @@ ADD config/ /home/docker
 
 EXPOSE 22
 # Start xdm and ssh services.
-CMD /etc/init.d/xdm restart && /usr/sbin/sshd -D
+CMD /usr/sbin/sshd -D

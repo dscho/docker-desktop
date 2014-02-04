@@ -63,9 +63,7 @@ echo $SCREEN_SIZE > ~/.Xscreen
 PROCESS_NUM=$(ps -ef | grep "xpra" | grep -v "grep" | wc -l)
 if [ $PROCESS_NUM -eq 0 ] || [ $FLAG  ]; then
         # Start xpra session
-	DISPLAY_1=$(( $DISPLAY + 1 ))
-
-	xpra start :$DISPLAY & sleep 5; xpra stop :$DISPLAY & sleep 5; xpra start :$DISPLAY --start-child="Xephyr -ac -screen $SCREEN_SIZE -query localhost -host-cursor -reset -terminate :$DISPLAY_1" --xvfb="Xvfb +extension Composite -screen 0 ${SCREEN_SIZE}x24+32 -nolisten tcp -noreset -auth /home/docker/.Xauthority" & sleep 5 ; DISPLAY=:$DISPLAY_1 fluxbox & DISPLAY=:$DISPLAY_1 rox --pinboard=Default &
+	xpra --xvfb="Xorg -dpi 96 -noreset -verbose +extension GLX +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" start :$DISPLAY
 	echo -e "\n----------------"
 	echo -e "Session started!"
 	echo -e "----------------\n"
