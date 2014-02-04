@@ -53,9 +53,15 @@ RUN apt-get install -y libreoffice-base firefox libreoffice-gtk libreoffice-calc
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
+# Create the directory needed to run the sshd daemon
+RUN mkdir /var/run/sshd
+
+# Add docker user
+RUN useradd -m -d /home/docker -s /bin/bash -G adm,sudo docker
+
 # Copy the files into the container
-ADD . /src
+ADD config/ /home/docker
 
 EXPOSE 22
 # Start xdm and ssh services.
-CMD ["/bin/bash", "/src/startup.sh"]
+CMD /etc/init.d/xdm restart && /usr/sbin/sshd -D
