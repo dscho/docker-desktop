@@ -36,5 +36,5 @@ ssh_port="$(sudo docker port "$container" 22)"
 ssh_port=${ssh_port##*:}
 
 # Call xpra
-xpra --ssh="ssh -i \"$(pwd)\"/id_rsa docker@127.0.0.1 -p $ssh_port" \
+xpra --ssh="ssh -o NoHostAuthenticationForLocalhost=true -i \"$(pwd)\"/id_rsa docker@127.0.0.1 -p $ssh_port" \
 	attach ssh::10
