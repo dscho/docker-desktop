@@ -60,5 +60,5 @@ RUN useradd -m -d /home/docker -s /bin/bash -G adm,sudo docker
 ADD config/ /home/docker
 
 EXPOSE 22
-# Start Xpra and ssh services.
-CMD su -c "./docker-desktop" -l docker && /usr/sbin/sshd -D
+# Start ssh and Xpra services.
+CMD /usr/sbin/sshd && su -c "./docker-desktop" -l docker
