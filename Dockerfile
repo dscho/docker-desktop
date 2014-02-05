@@ -65,6 +65,13 @@ RUN sed -i '/pam_loginuid/s/required/optional/' /etc/pam.d/sshd
 # Add docker user
 RUN useradd -m -d /home/docker -s /bin/bash -G adm,sudo docker
 
+# Upgrade xpra and Xdummy
+ADD http://winswitch.org/gpg.asc /root/winswitch.org.gpg.asc
+RUN apt-key add /root/winswitch.org.gpg.asc
+RUN echo "deb http://winswitch.org/ saucy main" > /etc/apt/sources.list.d/winswitch.list
+RUN apt-get update
+RUN apt-get install -y xpra xserver-xorg-video-dummy
+
 # Copy the files into the container
 ADD config/ /home/docker
 
