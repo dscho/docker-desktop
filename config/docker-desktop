@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# copy public ssh key if there is any
+test ! -f /shared/id_rsa.pub ||
+cat /shared/id_rsa.pub >> ~/.ssh/authorized_keys
+
 #Default screen resolution 800x600
 if [ ! -f ~/.Xscreen ]; then
 	SCREEN_SIZE="800x600"
