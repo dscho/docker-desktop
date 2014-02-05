@@ -28,7 +28,8 @@ test -f shared/id_rsa.pub || {
 
 # Make sure that docker-desktop is running
 test -n "$container" ||
-container="$(sudo docker run -h=docker-desktop -v "$(pwd)"/shared/:/shared -P -d "$image")" ||
+container="$(sudo docker run -h=docker-desktop \
+	-v "$(pwd)"/shared/:/shared -P -t -i -d "$image")" ||
 die "Could not run $image"
 
 # Determine port on which ssh is running
