@@ -36,6 +36,9 @@ die "Could not run $image"
 ssh_port="$(sudo docker port "$container" 22)"
 ssh_port=${ssh_port##*:}
 
+# Give the container some time to start up, like, one second
+sleep 2
+
 # Call xpra
 xpra --ssh="ssh -o NoHostAuthenticationForLocalhost=true -i \"$(pwd)\"/id_rsa docker@127.0.0.1 -p $ssh_port" \
 	attach ssh::10
