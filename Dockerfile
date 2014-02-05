@@ -70,4 +70,4 @@ ADD config/ /home/docker
 
 EXPOSE 22
 # Start dbus, ssh and Xpra services.
-CMD dbus-daemon --system --fork && /usr/sbin/sshd && su -c "./docker-desktop" -l docker && bash --login -i
+CMD rsyslogd && dbus-daemon --system --fork && /usr/sbin/sshd && su -c "./docker-desktop" -l docker && bash --login -i
