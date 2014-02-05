@@ -31,8 +31,8 @@ RUN apt-get install -y xpra rox-filer ssh xserver-xorg-video-dummy fluxbox
 # Configuring ssh to allow X11 Forwarding.
 RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
 
-# Upstart and DBus have issues inside docker. We work around in order to install firefox.
-RUN dpkg-divert --local --rename --add /sbin/initctl && ln -s /bin/true /sbin/initctl
+## Upstart and DBus have issues inside docker. We work around in order to install firefox.
+#RUN dpkg-divert --local --rename --add /sbin/initctl && ln -s /bin/true /sbin/initctl
 
 # Installing fuse package (libreoffice-java dependency) and it's going to try to create
 # a fuse device without success, due the container permissions. || : help us to ignore it.
