@@ -17,7 +17,7 @@
 # Date: 07/28/2013
 
 
-FROM ubuntu:12.10
+FROM stackbrew/ubuntu:13.10
 MAINTAINER Roberto G. Hashioka "roberto_hashioka@hotmail.com"
 
 RUN apt-get update
@@ -45,13 +45,22 @@ RUN apt-get -y install fuse
 
 # Installing the apps: Firefox, flash player plugin, LibreOffice and xterm
 # libreoffice-base installs libreoffice-java mentioned before
-RUN apt-get install -y libreoffice-base firefox libreoffice-gtk libreoffice-calc xterm ubuntu-restricted-extras
+RUN apt-get install -y libreoffice-base firefox libreoffice-gtk libreoffice-calc xterm
 
 # Set locale (fix the locale warnings)
 RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
+# Create the directory needed to run the dbus daemon
+RUN mkdir /var/run/dbus
+
 # Create the directory needed to run the sshd daemon
 RUN mkdir /var/run/sshd
+
+# Allow non-root to connect via ssh
+RUN rm -f /etc/nologin
+
+# Make login uid optional
+RUN sed -i '/pam_loginuid/s/required/optional/' /etc/pam.d/sshd
 
 # Add docker user
 RUN useradd -m -d /home/docker -s /bin/bash -G adm,sudo docker
@@ -60,5 +69,5 @@ RUN useradd -m -d /home/docker -s /bin/bash -G adm,sudo docker
 ADD config/ /home/docker
 
 EXPOSE 22
-# Start ssh and Xpra services.
-CMD /usr/sbin/sshd && su -c "./docker-desktop" -l docker
+# Start dbus, ssh and Xpra services.
+CMD dbus-daemon --system --fork && /usr/sbin/sshd && su -c "./docker-desktop" -l docker
