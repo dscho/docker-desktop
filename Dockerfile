@@ -75,6 +75,9 @@ RUN apt-get install -y xpra xserver-xorg-video-dummy
 # Install the gnome desktop so that gnome-terminal is available
 RUN apt-get install -y gnome-desktop-environment
 
+# Install socat for experimenting with unix sockets
+RUN apt-get install socat
+
 # Copy the files into the container
 ADD config/ /home/docker
 
