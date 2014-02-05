@@ -1,8 +1,11 @@
 #!/bin/bash
 
-# copy public ssh key if there is any
-test ! -f /shared/id_rsa.pub ||
-cat /shared/id_rsa.pub >> ~/.ssh/authorized_keys
+# copy public ssh key(s) if there are any
+for pub in /shared/id_*.pub
+do
+	test ! -f "$pub" ||
+	cat "$pub" >> ~/.ssh/authorized_keys
+done
 
 #Default screen resolution 800x600
 if [ ! -f ~/.Xscreen ]; then
