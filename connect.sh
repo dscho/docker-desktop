@@ -25,16 +25,30 @@ test -f shared/id_rsa.pub || {
 	die "Could not generate/copy private key"
 }
 
+wait_for_socket () {
+	counter=0
+	while test ! -S "$1"
+	do
+		printf .
+		counter=$(($counter+1))
+		test $counter -lt 5 ||
+		die " Socket $1 not available"
+		sleep 1
+	done
+	printf '\r'
+}
+
 # Make sure that docker-desktop is running
 test -S shared/docker-desktop-10 || {
 	sudo docker run -h=docker-desktop \
 		-v "$(pwd)"/shared/:/shared -P -t -i -d "$image" &&
 	# Give the container some time to start up, like, one second
-	sleep 2
+	wait_for_socket shared/docker-desktop-10
 } ||
 die "Could not run $image"
 
 
 # Call xpra
 socat UNIX-LISTEN:shared/$(hostname)-10 UNIX:shared/docker-desktop-10 &
-XRPA_ALLOW_ALPHA=0 xpra --socket-dir="$(pwd)"/shared/ attach :10
+wait_for_socket shared/$(hostname)-10 &&
+XPRA_ALLOW_ALPHA=0 xpra --socket-dir="$(pwd)"/shared/ attach :10
