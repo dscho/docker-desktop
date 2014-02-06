@@ -1,5 +1,34 @@
 #!/bin/bash
 
+test -d /shared/ || {
+	cat >&2 << EOF
+
+Welcome to docker-desktop!
+
+This Docker container will run an Xpra instance to which you will be able
+to connect via ssh or Unix sockets. However, for this to work, you *need*
+to start Docker with a shared directory:
+
+	docker run -v "\$(pwd)"/shared:/shared/ dscho/docker-desktop
+
+If you want to connect via ssh, you will have to copy your public key,
+say, id_rsa.pub, to that shared directory, too, *and* add an appropriate
+-p option, e.g. -p 2345:22 (so that 'ssh -p 2345 docker@127.0.0.1' works).
+
+After that, you can connect via ssh:
+
+	xpra --ssh="ssh -p 2345 docker@127.0.0.1" attach :10
+
+or via Unix sockets:
+
+	socat UNIX-LISTEN:shared/$(hostname)-10 UNIX:docker-desktop-10 &
+	xpra --socket-dir=shared/ attach :10
+
+Exiting.
+EOF
+	exit 1
+}
+
 # copy public ssh key(s) if there are any
 for pub in /shared/id_*.pub
 do
