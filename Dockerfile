@@ -72,6 +72,9 @@ RUN echo "deb http://winswitch.org/ saucy main" > /etc/apt/sources.list.d/winswi
 RUN apt-get update
 RUN apt-get install -y xpra xserver-xorg-video-dummy
 
+# Install the gnome desktop so that gnome-terminal is available
+RUN apt-get install -y gnome-desktop-environment
+
 # Copy the files into the container
 ADD config/ /home/docker
 
