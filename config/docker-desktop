@@ -1,5 +1,41 @@
 #!/bin/bash
 
+test -d /shared/ || {
+	cat >&2 << EOF
+
+Welcome to docker-desktop!
+
+This Docker container will run an Xpra instance to which you will be able
+to connect via ssh or Unix sockets. However, for this to work, you *need*
+to start Docker with a shared directory:
+
+	docker run -v "\$(pwd)"/shared:/shared/ dscho/docker-desktop
+
+If you want to connect via ssh, you will have to copy your public key,
+say, id_rsa.pub, to that shared directory, too, *and* add an appropriate
+-p option, e.g. -p 2345:22 (so that 'ssh -p 2345 docker@127.0.0.1' works).
+
+After that, you can connect via ssh:
+
+	xpra --ssh="ssh -p 2345 docker@127.0.0.1" attach :10
+
+or via Unix sockets:
+
+	socat UNIX-LISTEN:shared/$(hostname)-10 UNIX:docker-desktop-10 &
+	xpra --socket-dir=shared/ attach :10
+
+Exiting.
+EOF
+	exit 1
+}
+
+# copy public ssh key(s) if there are any
+for pub in /shared/id_*.pub
+do
+	test ! -f "$pub" ||
+	cat "$pub" >> ~/.ssh/authorized_keys
+done
+
 #Default screen resolution 800x600
 if [ ! -f ~/.Xscreen ]; then
 	SCREEN_SIZE="800x600"
@@ -59,9 +95,8 @@ echo $SCREEN_SIZE > ~/.Xscreen
 PROCESS_NUM=$(ps -ef | grep "xpra" | grep -v "grep" | wc -l)
 if [ $PROCESS_NUM -eq 0 ] || [ $FLAG  ]; then
         # Start xpra session
-	DISPLAY_1=$(( $DISPLAY + 1 ))
-
-	xpra start :$DISPLAY & sleep 5; xpra stop :$DISPLAY & sleep 5; xpra start :$DISPLAY --start-child="Xephyr -ac -screen $SCREEN_SIZE -query localhost -host-cursor -reset -terminate :$DISPLAY_1" --xvfb="Xvfb +extension Composite -screen 0 ${SCREEN_SIZE}x24+32 -nolisten tcp -noreset -auth /home/docker/.Xauthority" & sleep 5 ; DISPLAY=:$DISPLAY_1 fluxbox & DISPLAY=:$DISPLAY_1 rox --pinboard=Default &
+	#XPRA_ALLOW_ALPHA=0 XPRA_ALPHA=0 xpra --xvfb="Xorg -dpi 96 -noreset -verbose +extension GLX +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" --socket-dir=/shared/ start :$DISPLAY
+	XPRA_ALLOW_ALPHA=0 XPRA_ALPHA=0 xpra --opengl=no --xvfb="Xorg -dpi 96 -noreset -verbose +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" --socket-dir=/shared/ start :$DISPLAY
 	echo -e "\n----------------"
 	echo -e "Session started!"
 	echo -e "----------------\n"
