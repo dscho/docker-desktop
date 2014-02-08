@@ -95,7 +95,8 @@ echo $SCREEN_SIZE > ~/.Xscreen
 PROCESS_NUM=$(ps -ef | grep "xpra" | grep -v "grep" | wc -l)
 if [ $PROCESS_NUM -eq 0 ] || [ $FLAG  ]; then
         # Start xpra session
-	xpra --xvfb="Xorg -dpi 96 -noreset -verbose +extension GLX +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" --socket-dir=/shared/ start :$DISPLAY
+	#XPRA_ALLOW_ALPHA=0 XPRA_ALPHA=0 xpra --xvfb="Xorg -dpi 96 -noreset -verbose +extension GLX +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" --socket-dir=/shared/ start :$DISPLAY
+	XPRA_ALLOW_ALPHA=0 XPRA_ALPHA=0 xpra --opengl=no --xvfb="Xorg -dpi 96 -noreset -verbose +extension RANDR +extension RENDER -logfile $HOME/.xpra/$DISPLAY.log -config $PWD/xorg.conf" "--start-child=dbus-launch xterm" --socket-dir=/shared/ start :$DISPLAY
 	echo -e "\n----------------"
 	echo -e "Session started!"
 	echo -e "----------------\n"

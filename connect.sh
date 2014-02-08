@@ -51,4 +51,4 @@ die "Could not run $image"
 # Call xpra
 socat UNIX-LISTEN:shared/$(hostname)-10 UNIX:shared/docker-desktop-10 &
 wait_for_socket shared/$(hostname)-10 &&
-XPRA_ALLOW_ALPHA=0 xpra --socket-dir="$(pwd)"/shared/ attach :10
+XPRA_ALLOW_ALPHA=0 ALLOW_ALPHA=0 xpra --socket-dir="$(pwd)"/shared/ attach :10
